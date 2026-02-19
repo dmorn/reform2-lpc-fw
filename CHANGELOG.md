@@ -1,3 +1,7 @@
+### 2026-02-19
+
+ - auto power-on when AC power is reconnected while SoM is off
+
 ### 2025-07-01
 
  - no changes

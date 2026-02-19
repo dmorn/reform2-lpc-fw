@@ -1112,7 +1112,7 @@ void handle_spi_commands() {
         break;
       }
     }
-    uint8_t discard = LPC_SSP0->DR;
+    (void)LPC_SSP0->DR;
   }
 
   /* execute commands that may block for a while */
@@ -1240,6 +1240,16 @@ int main(void) {
     }
     measure_cell_voltages_and_control_discharge(); // 5-6ms delay
     calculate_capacity_percentage();
+
+    // Auto power-on when wall power is reconnected
+    static bool ac_power_prev = false;
+    bool ac_power_now = (current < -0.1f);
+
+    if (ac_power_now && !ac_power_prev && !som_is_powered) {
+      // Transition: power was absent, now present — boot the SoM
+      turn_som_power_on();
+    }
+    ac_power_prev = ac_power_now;
 
     if (state == ST_CHARGE) {
       reset_discharge_bits();
